@@ -1,0 +1,85 @@
+@using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Interface
+@using BlazorCrud.Request.EmployeeContacts
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject IEmployeeService EmployeeService
+@inject IEmployeeContactsService EmployeeContactsService
+@inject IDialogService DialogService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model"></MudForm>
+        <MudTextField T="string" @bind-Value="model.Type" Label="Text (Ex: Home)" Required="true" RequiredError="Type is required"/>
+        <MudTextField T="string" @bind-Value="model.Value" Label="Value" Required="true" RequiredError="Value is required"/>
+        <MudSwitch @bind-Value="model.IsPrimary" Label="Contact Primary" Color="Color.Secondary" />
+        
+        <MudSelect T="Guid" Label="Employee" Placeholder="Select an employee" @bind-Value="model.EmployeeId" Required="true" RequiredError="Employee is required!">
+            @foreach (var employee in _employees)
+            {
+                <MudSelectItem T="Guid" Value="@(employee.Id)">@employee.Name</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Create</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+    
+    private MudForm form = default;
+    private CreateEmployeeContactRequest model = new();
+    private List<EmployeeDTO> _employees = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployee();
+    }
+
+    private async Task Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await EmployeeContactsService.CreateAsync(model);
+                Snackbar.Add("Employee Created", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+    
+    private async Task LoadEmployee()
+    {
+        try
+        {
+            StateHasChanged();
+            _employees = (await EmployeeService.GetAllAsync()).ToList();
+            
+            if (_employees.Any())
+            {
+                model.EmployeeId = _employees.First().Id;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }  
+    }
+
+}

@@ -1,0 +1,58 @@
+@using BlazorCrud.Domain
+@using BlazorCrud.Interface
+@using BlazorCrud.Request.Employee
+@using Microsoft.AspNetCore.Authorization
+@inject IEmployeeService EmployeeService
+@inject ISnackbar Snackbar 
+@inject IDialogService DialogService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model">
+            <MudTextField T="string" @bind-Value="model.Name" Label="Employee" Required="true" RequiredError="Name is required"/>
+            <MudSelect T="string" Label="Gender" @bind-Value="model.Gender" Required="true" RequiredError="Gender is required!">
+                <MudSelectItem Value="@("Male")">Male</MudSelectItem>
+                <MudSelectItem Value="@("Female")">Female</MudSelectItem>
+                <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+            </MudSelect>
+            
+            <MudTextField T="string" @bind-Value="model.City" Label="City" Required="true" RequiredError="City is required"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Create</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+
+    private MudForm form = default;
+    private CreateEmployeeRequest model = new();
+
+    private async Task Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await EmployeeService.CreateAsync(model);
+                Snackbar.Add("Employee Created", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Error creating employee", Severity.Error);
+            }
+        }
+    }
+}

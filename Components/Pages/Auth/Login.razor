@@ -1,0 +1,118 @@
+@page "/login"
+@using System.Security.Claims
+@using BlazorCrud.Domain
+@using BlazorCrud.Data
+@using BlazorCrud.Service
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext Context
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-10">
+    <MudPaper Elevation="4" Class="pa-6 rounded-lg">
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-4">Login</MudText>
+
+        <EditForm method="Post" FormName="LoginForm" Model="@loginModel" OnValidSubmit="LoginAsync">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="E-mail"
+                          @bind-Value="loginModel.Email"
+                          For="@(() => loginModel.Email)"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Email"
+                          Class="mb-3" />
+
+            <MudTextField Label="Senha"
+                          @bind-Value="loginModel.Password"
+                          For="@(() => loginModel.Password)"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Password"
+                          Class="mb-4" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>SIGN IN</MudText>
+                }
+            </MudButton>
+
+            <MudText Align="Align.Center" Class="mt-4">
+                Don't have an account? <MudLink Href="/register">Sign up</MudLink>
+            </MudText>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [SupplyParameterFromForm(FormName =  "LoginForm")]
+    public LoginRequest loginModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loginModel.Email = "lucas@gmail.com";
+        loginModel.Password = "lucas123";
+    }
+    
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; } = "/";
+    
+    private bool isLoading = false;
+
+    async Task LoginAsync()
+    {
+        isLoading = true;
+
+        try
+        {
+            var user = await Context.Users
+                .FirstOrDefaultAsync(x =>
+                    x.Email == loginModel.Email);
+
+            if (user == null)
+            {
+                Snackbar.Add(
+                    "Invalid email or password.",
+                    Severity.Error
+                );
+
+                return;
+            }
+
+            var validPassword = BCrypt.Net.BCrypt.Verify(
+                loginModel.Password,
+                user.PasswordHash
+            );
+
+            if (!validPassword)
+            {
+                Snackbar.Add(
+                    "Invalid email or password.",
+                    Severity.Error
+                );
+
+                return;
+            }
+
+            AuthStateProvider.Login(user);
+
+            NavigationManager.NavigateTo("/");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

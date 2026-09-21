@@ -1,0 +1,103 @@
+@using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Dtos.EmployeeContacts
+@using BlazorCrud.Interface
+@using BlazorCrud.Request.EmployeeContacts
+@using Microsoft.AspNetCore.Authorization
+@inject ISnackbar Snackbar
+@inject IEmployeeService EmployeeService
+@inject IEmployeeContactsService EmployeeContactsService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model"></MudForm>
+        <MudTextField T="string" @bind-Value="model.Type" Label="Text (Ex: Home)" Required="true" RequiredError="Type is required"/>
+        <MudTextField T="string" @bind-Value="model.Value" Label="Value" Required="true" RequiredError="Value is required"/>
+        <MudSwitch @bind-Value="model.IsPrimary" Label="Contact Primary" Color="Color.Secondary" />
+        
+        <MudSelect T="Guid"
+                   Variant="Variant.Outlined"
+                   Label="Employee"
+                   @bind-Value="model.EmployeeId"
+                   Required="true"
+                   RequiredError="Employee is required!">
+            @foreach (var employee in _employees)
+            {
+                <MudSelectItem T="Guid" Value="@employee.Id">
+                    @employee.Name
+                </MudSelectItem>
+            }
+        </MudSelect>
+        
+        @* <MudSelect Variant="Variant.Outlined" Label="Employee" @bind-Value="model.EmployeeId" Required="true" RequiredError="Employee is required!"> *@
+        @*     @foreach (var employee in _employees) *@
+        @*     { *@
+        @*         <MudSelectItem Value="@(employee.Id)">@employee.Name</MudSelectItem> *@
+        @*     } *@
+        @* </MudSelect> *@
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+    [Parameter] public EmployeeContactDTO employeeContact { get; set; }
+    [Parameter] public string Title { get; set; }
+    
+    private MudForm form = default;
+    private UpdateEmployeeContactRequest model = new();
+    private List<EmployeeDTO> _employees = new();
+    
+    protected  override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Contact ID: {employeeContact.Id}");
+        Console.WriteLine($"Employee ID: {employeeContact.EmployeeId}");
+        Console.WriteLine($"Type: {employeeContact.Type}");
+        Console.WriteLine($"Value: {employeeContact.Value}");
+        
+        await LoadEmployee();
+        
+        model.Id = employeeContact.Id;
+        model.Type = employeeContact.Type;
+        model.Value = employeeContact.Value;
+        model.IsPrimary = employeeContact.IsPrimary;
+        model.EmployeeId = employeeContact.EmployeeId;
+    }
+
+    private async Task Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await EmployeeContactsService.UpdateAsync(model);
+                Snackbar.Add("Employee Contact Updated", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+    
+    private async Task LoadEmployee()
+    {
+        try
+        {
+            StateHasChanged();
+            _employees = (await EmployeeService.GetAllAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }  
+    }
+
+}

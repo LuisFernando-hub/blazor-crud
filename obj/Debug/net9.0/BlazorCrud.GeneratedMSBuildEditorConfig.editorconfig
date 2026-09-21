@@ -1,0 +1,108 @@
+is_global = true
+build_property.MudDebugAnalyzer = 
+build_property.MudAllowedAttributePattern = 
+build_property.MudAllowedAttributeList = 
+build_property.TargetFramework = net9.0
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = BlazorCrud
+build_property.RootNamespace = BlazorCrud
+build_property.ProjectDir = /Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Auth/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL0xvZ2luLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Auth/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL1JlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Auth/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL1JlZ2lzdGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db3VudGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/DeleteConfirmation.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9EZWxldGVDb25maXJtYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Employee/Dialog/CreateEmployee.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZS9EaWFsb2cvQ3JlYXRlRW1wbG95ZWUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Employee/Dialog/UpdateEmployee.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZS9EaWFsb2cvVXBkYXRlRW1wbG95ZWUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Employee/Employees.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZS9FbXBsb3llZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/EmployeeContacts/Dialog/CreateEmployeeContact.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZUNvbnRhY3RzL0RpYWxvZy9DcmVhdGVFbXBsb3llZUNvbnRhY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/EmployeeContacts/Dialog/UpdateEmployeeContact.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZUNvbnRhY3RzL0RpYWxvZy9VcGRhdGVFbXBsb3llZUNvbnRhY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/EmployeeContacts/EmployeeContacts.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZUNvbnRhY3RzL0VtcGxveWVlQ29udGFjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9XZWF0aGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9Sb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/luisfernando/Desktop/Estudos/BlazorCrud/BlazorCrud/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9fSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
