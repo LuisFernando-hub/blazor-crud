@@ -18,4 +18,16 @@
     <PackageReference Include="MudBlazor" Version="8.*" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\CreateEmployee.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\UpdateEmployee.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\EmployeeNotess.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="wwwroot\images\logo.png" />
+  </ItemGroup>
 </Project>

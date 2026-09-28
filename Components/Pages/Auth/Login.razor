@@ -10,52 +10,92 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-10">
-    <MudPaper Elevation="4" Class="pa-6 rounded-lg">
-        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-4">Login</MudText>
+<MudGrid Class="min-vh-100 ma-0 pa-0">
 
-        <EditForm method="Post" FormName="LoginForm" Model="@loginModel" OnValidSubmit="LoginAsync">
-            <DataAnnotationsValidator />
+    <!-- IMAGEM -->
+    <MudItem xs="12" md="7" Class="pa-0 login-image-container">
+        <MudImage Src="/images/logo.png"
+                  Alt="Login"
+                  Class="login-image"
+                  ObjectFit="ObjectFit.Cover" />
+    </MudItem>
 
-            <MudTextField Label="E-mail"
-                          @bind-Value="loginModel.Email"
-                          For="@(() => loginModel.Email)"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Email"
-                          Class="mb-3" />
+    <!-- LOGIN -->
+    <MudItem xs="12" md="5"
+             Class="d-flex align-center justify-center pa-4">
 
-            <MudTextField Label="Senha"
-                          @bind-Value="loginModel.Password"
-                          For="@(() => loginModel.Password)"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          Class="mb-4" />
+        <MudPaper Elevation="4"
+                  Class="pa-6 rounded-lg login-card">
 
-            <MudButton ButtonType="ButtonType.Submit"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                }
-                else
-                {
-                    <MudText>SIGN IN</MudText>
-                }
-            </MudButton>
+            <MudIconButton Icon="@(DarkLightModeButtonIcon)"
+                           Color="Color.Inherit"
+                           OnClick="@HandleClick" />
 
-            <MudText Align="Align.Center" Class="mt-4">
-                Don't have an account? <MudLink Href="/register">Sign up</MudLink>
+            <MudText Typo="Typo.h5"
+                     Align="Align.Center"
+                     Class="mb-4">
+                Login
             </MudText>
-        </EditForm>
-    </MudPaper>
-</MudContainer>
+
+            <EditForm method="Post"
+                      FormName="LoginForm"
+                      Model="@loginModel"
+                      OnValidSubmit="LoginAsync">
+
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="E-mail"
+                              @bind-Value="loginModel.Email"
+                              For="@(() => loginModel.Email)"
+                              Variant="Variant.Outlined"
+                              InputType="InputType.Email"
+                              Class="mb-3" />
+
+                <MudTextField Label="Senha"
+                              @bind-Value="loginModel.Password"
+                              For="@(() => loginModel.Password)"
+                              Variant="Variant.Outlined"
+                              InputType="InputType.Password"
+                              Class="mb-4" />
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Disabled="@isLoading">
+
+                    @if (isLoading)
+                    {
+                        <MudProgressCircular Size="Size.Small"
+                                             Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <MudText>SIGN IN</MudText>
+                    }
+
+                </MudButton>
+
+                <MudText Align="Align.Center" Class="mt-4">
+                    Don't have an account?
+                    <MudLink Href="/register">Sign up</MudLink>
+                </MudText>
+
+            </EditForm>
+
+        </MudPaper>
+
+    </MudItem>
+
+</MudGrid>
 
 @code {
     [SupplyParameterFromForm(FormName =  "LoginForm")]
     public LoginRequest loginModel { get; set; } = new();
+    [Parameter]
+    public EventCallback ModeToggle { get; set; }
+    [Parameter]
+    public bool IsDarkMode { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +110,17 @@
     public string ReturnUrl { get; set; } = "/";
     
     private bool isLoading = false;
+    
+    private async Task HandleClick()
+    {
+        await ModeToggle.InvokeAsync();
+    }
+    
+    public string DarkLightModeButtonIcon => IsDarkMode switch
+    {
+        true => Icons.Material.Rounded.AutoMode,
+        false => Icons.Material.Outlined.DarkMode,
+    };
 
     async Task LoginAsync()
     {
@@ -116,3 +167,21 @@
         }
     }
 }
+
+<style>
+    .login-image-container {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .login-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 450px;
+    }
+</style>

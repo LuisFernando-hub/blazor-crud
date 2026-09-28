@@ -1,4 +1,5 @@
 @using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Enums
 @using BlazorCrud.Interface
 @using BlazorCrud.Request.EmployeeContacts
 @using Microsoft.AspNetCore.Authorization
@@ -11,11 +12,21 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="@model"></MudForm>
-        <MudTextField T="string" @bind-Value="model.Type" Label="Text (Ex: Home)" Required="true" RequiredError="Type is required"/>
-        <MudTextField T="string" @bind-Value="model.Value" Label="Value" Required="true" RequiredError="Value is required"/>
+        <MudSelect T="ContactTypes" Variant="Variant.Outlined" Label="Select a Type Contact" Placeholder="Type Contact"
+                   @bind-Value="model.Type" Required="true" RequiredError="Type Contact is required">
+            @foreach (var type in Enum.GetValues<ContactTypes>())
+            {
+                <MudSelectItem T="ContactTypes" Value="type">@type</MudSelectItem>
+            }
+        </MudSelect>
+        
+        <MudTextField T="string" Variant="Variant.Outlined" @bind-Value="model.Value" Label="Value" Required="true" 
+                      RequiredError="Value is required"/>
+        
         <MudSwitch @bind-Value="model.IsPrimary" Label="Contact Primary" Color="Color.Secondary" />
         
-        <MudSelect T="Guid" Label="Employee" Placeholder="Select an employee" @bind-Value="model.EmployeeId" Required="true" RequiredError="Employee is required!">
+        <MudSelect T="Guid" Variant="Variant.Outlined" Label="Employee" Placeholder="Select an employee" 
+                   @bind-Value="model.EmployeeId" Required="true" RequiredError="Employee is required">
             @foreach (var employee in _employees)
             {
                 <MudSelectItem T="Guid" Value="@(employee.Id)">@employee.Name</MudSelectItem>

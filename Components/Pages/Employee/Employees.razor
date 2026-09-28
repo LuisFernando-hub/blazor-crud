@@ -1,11 +1,14 @@
 @page "/employee"
 @using BlazorCrud.Components.Pages.Employee.Dialog
+@using BlazorCrud.Dtos.Department
 @using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Enums
 @using BlazorCrud.Interface
 @using Microsoft.AspNetCore.Authorization
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IEmployeeService EmployeeService
+@inject IDepartamentService DepartamentService
 @attribute [Authorize]
 
 <PageTitle>Employees</PageTitle>
@@ -27,9 +30,12 @@
                 }
                 
                 <MudDataGrid T="EmployeeDTO" Items="@_employees" Loading="@_loading" Hover="true" Dense="false"
-                             Striped="false" Bordered="false" ReadOnly="true" Class="elevation-1">
+                             Striped="false" Bordered="false" ReadOnly="true" Class="elevation-1" Filterable="true" QuickFilter="@_quickFilter">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6" Class="mud-primary-text">Team Members (@_employees.Count)</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                     </ToolBarContent>
                     <Columns>
                         <PropertyColumn Property="x => x.Name" Title="Employee Name">
@@ -40,9 +46,16 @@
                                 </MudStack>
                             </CellTemplate>
                         </PropertyColumn>
+                        <PropertyColumn Property="x => x.Departament.Name" Title="Departament">
+                            <CellTemplate>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    <MudText>@context.Item.Departament.Name</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
                         <PropertyColumn Property="x => x.Gender" Title="Gender">
                             <CellTemplate>
-                                <MudChip Color="@(context.Item.Gender == "Male" ? Color.Info : Color.Secondary)">@context.Item.Gender</MudChip>
+                                <MudChip Color="@(context.Item.Gender == Gender.Male ? Color.Info : Color.Secondary)">@context.Item.Gender</MudChip>
                             </CellTemplate>
                         </PropertyColumn>
                         <PropertyColumn Property="x => x.City" Title="City">
@@ -53,7 +66,7 @@
                                 </MudStack>
                             </CellTemplate>
                         </PropertyColumn>
-                        <PropertyColumn Property="x => x.CreatedAt" Title="Joined" Format="MMM dd, yyyy" />
+                        <PropertyColumn Property="x => x.CreatedAt" Title="Created At" Format="MMM dd, yyyy" />
                         <TemplateColumn Title="Actions" TextAlignment="TextAlignment.Right">
                             <CellTemplate>
                                 <MudStack Row="true" Spacing="0" Class="pa-2">
@@ -62,11 +75,15 @@
                                                        Size="Size.Small" Class="mx-1"
                                                        OnClick="@(() => OpenEditDialog(context.Item))" />
                                     </div>
-                                    <div>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                                                       Size="Size.Small" Class="mx-1"
-                                                       OnClick="@(() => OpenDeleteDialog(context.Item.Id))" />
-                                    </div>
+                                    <AuthorizeView Roles="Admin">
+                                        <Authorized Context="authContext">
+                                            <div>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                                               Size="Size.Small" Class="mx-1"
+                                                               OnClick="@(() => OpenDeleteDialog(context.Item.Id))" />
+                                            </div>
+                                        </Authorized>
+                                    </AuthorizeView>
                                 </MudStack>
                             </CellTemplate>
 
@@ -86,7 +103,7 @@
     private List<EmployeeDTO> _employees = new();
     private bool _loading = true;
     private string _searchString = string.Empty;
-    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private readonly DialogOptions config = new() { FullWidth = true, CloseButton = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,10 +136,10 @@
         var parameters = new DialogParameters
         {
             ["Employee"] = employee,
-            ["Title"] = $"Edit Employee: {employee.Name}"
+            ["Title"] = $"Edit Employee: {employee.Name}",
         };
 
-        var dialog = await DialogService.ShowAsync<UpdateEmployee>("Edit Employee", parameters);
+        var dialog = await DialogService.ShowAsync<UpdateEmployee>("Edit Employee", parameters, config);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -136,11 +153,11 @@
     {
         var parameters = new DialogParameters
         {
-            ["EmployeeId"] = employeeId,
+            ["Id"] = employeeId,
             ["Message"] = "Are you sure you want to delete this employee? This action cannot be undone."
         };
 
-        var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Confirm Deletion", parameters);
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Confirm Deletion", parameters, config);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -160,7 +177,7 @@
 
     private async Task OpenCreateDialog()
     {
-        var dialog = await DialogService.ShowAsync<CreateEmployee>("Add New Employee");
+        var dialog = await DialogService.ShowAsync<CreateEmployee>("Add New Employee", config);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -169,4 +186,18 @@
             Snackbar.Add("Employee created successfully", Severity.Success);
         }
     }
+    
+    private Func<EmployeeDTO, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        if (x.City.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
 }

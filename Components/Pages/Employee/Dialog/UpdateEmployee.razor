@@ -1,9 +1,12 @@
 @using BlazorCrud.Domain
+@using BlazorCrud.Dtos.Department
 @using BlazorCrud.Dtos.Employee
 @using BlazorCrud.Interface
+@using BlazorCrud.Enums
 @using BlazorCrud.Request.Employee
 @using Microsoft.AspNetCore.Authorization
 @inject IEmployeeService EmployeeService
+@inject IDepartamentService DepartamentService
 @inject ISnackbar Snackbar 
 @inject IDialogService DialogService
 @attribute [Authorize]
@@ -11,19 +14,43 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" Model="@model">
-            <MudTextField T="string" @bind-Value="model.Name" Label="Employee" Required="true" RequiredError="Name is required"/>
-            <MudSelect T="string" Label="Gender" @bind-Value="model.Gender" Required="true" RequiredError="Gender is required!">
-                <MudSelectItem Value="@("Male")">Male</MudSelectItem>
-                <MudSelectItem Value="@("Female")">Female</MudSelectItem>
-                <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.Name" Label="Employee" Required="true" RequiredError="Name is required"/>
+            <MudSelect Variant="Variant.Outlined" T="Gender" Label="Gender" @bind-Value="model.Gender" Required="true" RequiredError="Gender is required!">
+                @foreach (var gender in Enum.GetValues<Gender>())
+                {
+                    <MudSelectItem Value="gender">@gender</MudSelectItem>
+                }
             </MudSelect>
             
-            <MudTextField T="string" @bind-Value="model.City" Label="City" Required="true" RequiredError="City is required"/>
+            <MudSelect T="Guid" @bind-Value="model.DepartamentId" Variant="Variant.Outlined" Label="Departament"
+                       Required="true" Placeholder="Select Departament" RequiredError="Departament is required">
+                <MudSelectItem T="Guid" Value="@Guid.Empty">
+                    Select Departament
+                </MudSelectItem>
+                @foreach (var departament in _departaments)
+                {
+                    <MudSelectItem T="Guid" Value="departament.Id">@departament.Name</MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.City" Label="City" Required="true" RequiredError="City is required"/>
+            
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <MudSelect Variant="Variant.Outlined" T="EmployeeStatus" Label="Status" @bind-Value="model.Status">
+                        @foreach (var status in Enum.GetValues<EmployeeStatus>())
+                        {
+                            <MudSelectItem Value="status">@status</MudSelectItem>
+                        }
+                    </MudSelect>
+                </Authorized>
+            </AuthorizeView>
+
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Create</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -35,7 +62,13 @@
     
     private MudForm form;
     private UpdateEmployeeRequest model = new();
+    private List<DepartamentDTO> _departaments = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDepartaments();
+    }
+    
     private async Task Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
@@ -55,13 +88,29 @@
             }
         }
     }
+
+    private async Task LoadDepartaments()
+    {
+        try
+        {
+            StateHasChanged();
+            
+            _departaments = (await DepartamentService.GetAllAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error to loading departaments", Severity.Error);
+        }
+    }
     
     protected override void OnInitialized()
     {
         model.Id = employee.Id;
+        model.DepartamentId = employee.DepartamentId;
         model.Name = employee.Name;
         model.Gender = employee.Gender;
         model.City = employee.City;
+        model.Status = employee.Status;
     }
 
 }

@@ -1,11 +1,9 @@
-using System.Security.Claims;
 using BlazorCrud.Data;
 using BlazorCrud.Domain;
 using BlazorCrud.Dtos.Employee;
 using BlazorCrud.Dtos.EmployeeContacts;
 using BlazorCrud.Interface;
 using BlazorCrud.Request.EmployeeContacts;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorCrud.Service;
@@ -13,28 +11,14 @@ namespace BlazorCrud.Service;
 public class EmployeeContactsService : IEmployeeContactsService
 {
     private readonly AppDbContext _appDbContext;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public EmployeeContactsService(AppDbContext appDbContext, AuthenticationStateProvider authenticationStateProvider)
+    public EmployeeContactsService(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
-        _authenticationStateProvider = authenticationStateProvider;
     }
     
     public async Task<IEnumerable<EmployeeContactDTO>> GetAllAsync()
     {
-        var authState = await _authenticationStateProvider
-            .GetAuthenticationStateAsync();
-
-        var user = authState.User;
-
-        var userId = user.FindFirst(
-            ClaimTypes.NameIdentifier
-        )?.Value;
-        
-        Console.WriteLine("ID DO USUARIO LOGADO NO SISTEMA: "+ userId);
-        Console.WriteLine("USUARIO LOGADO NO SISTEMA: "+ user);
-        
         return await _appDbContext.EmployeeContacts
             .Include(e => e.Employee)
             .Select(ec => new EmployeeContactDTO()
@@ -79,6 +63,19 @@ public class EmployeeContactsService : IEmployeeContactsService
 
     public async Task CreateAsync(CreateEmployeeContactRequest request)
     {
+        //Validar se o tipo do contato é primario e se ja existe um tipo primeiro
+        var checkTypePrimary = await _appDbContext.EmployeeContacts
+            .Include(e => e.Employee)
+            .FirstOrDefaultAsync(ec => ec.Type == request.Type && ec.IsPrimary == true);
+        
+        if (checkTypePrimary != null)
+        {
+            throw new InvalidOperationException(
+                $"Employee Contact type {checkTypePrimary.Type} " +
+                $"primary is already in use in employee {checkTypePrimary.Employee.Name}"
+                );
+        }
+        
         var employeeContact = new EmployeeContacts
         {
             Id = Guid.NewGuid(),
@@ -106,6 +103,7 @@ public class EmployeeContactsService : IEmployeeContactsService
             employeeContacts.Value = request.Value;
             employeeContacts.IsPrimary = request.IsPrimary;
             employeeContacts.EmployeeId = request.EmployeeId;
+            await _appDbContext.SaveChangesAsync();
         }
     }
 

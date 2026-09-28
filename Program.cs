@@ -40,6 +40,9 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeContactsService, EmployeeContactsService>();
+builder.Services.AddScoped<IDepartamentService, DepartamentService>();
+builder.Services.AddScoped<IEmployeeNotesService, EmployeeNotesService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 //Conection database mysql
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -63,7 +66,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseAntiforgery();
-
 
 app.MapStaticAssets();
 

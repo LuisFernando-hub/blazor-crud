@@ -1,0 +1,112 @@
+@using BlazorCrud.Dtos.EmployeeNotes
+@using BlazorCrud.Enums
+
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudIcon Icon="@Icons.Material.Filled.Description" Color="Color.Primary"/> 
+            <MudText Typo="Typo.h6"> Employee Note </MudText>
+        </MudStack>
+    </TitleContent> 
+    <DialogContent>
+        <MudStack Spacing="4">
+            <MudPaper Outlined="true" Class="pa-4">
+                <MudText Typo="Typo.subtitle1" Class="mb-3"> Note Information </MudText> 
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary"> Content </MudText>
+                        <MudPaper Class="pa-3 mt-1" Elevation="0">
+                             <MudText> @Note.Content </MudText>
+                        </MudPaper>
+                    </MudItem> 
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary"> Created At </MudText>
+                        <MudText> @Note.CreatedAt.ToString("dd/MM/yyyy HH:mm") </MudText>
+                    </MudItem> 
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary"> Updated At </MudText> 
+                        @* <MudText> @Note.UpdatedAt.ToString("dd/MM/yyyy HH:mm") </MudText> *@
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                        <MudPaper Outlined="true" Class="pa-4">
+                            <MudText Typo="Typo.subtitle1" Class="mb-3"> Employee </MudText> 
+                            <MudGrid>
+                                <MudItem xs="12" sm="6"> <MudText Typo="Typo.caption" Color="Color.Secondary"> Name </MudText>
+                                    <MudText> @Note.Employee.Name </MudText> 
+                                </MudItem>
+                                <MudItem xs="12" sm="6"> <MudText Typo="Typo.caption" Color="Color.Secondary"> City </MudText>
+                                    <MudText> @Note.Employee.City </MudText> 
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary"> Gender </MudText> 
+                                    <MudText> @Note.Employee.Gender </MudText>
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary"> Status </MudText>
+                                    <MudChip T="EmployeeStatus" Color="@(Note.Employee.Status == EmployeeStatus.Active ? Color.Success : Color.Default)" Size="Size.Small"> @Note.Employee.Status </MudChip>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                        <MudPaper Outlined="true" Class="pa-4">
+                            <MudText Typo="Typo.subtitle1" Class="mb-3"> Department </MudText> 
+                            <MudGrid>
+                                <MudItem xs="12" sm="6"> <MudText Typo="Typo.caption" Color="Color.Secondary"> Name </MudText> 
+                                    <MudText> @Note.Employee.Departament.Name </MudText> 
+                                </MudItem> 
+                                <MudItem xs="12"> <MudText Typo="Typo.caption" Color="Color.Secondary"> Description </MudText> 
+                                    <MudText> @Note.Employee.Departament.Description </MudText> 
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper> 
+                        @if (Note.Employee.EmployeeContacts.Any())
+                        {
+                            <MudPaper Outlined="true" Class="pa-4">
+                                <MudText Typo="Typo.subtitle1" Class="mb-3"> Contacts </MudText>
+                                <MudStack Spacing="2">
+                                    @foreach (var contact in Note.Employee.EmployeeContacts)
+                                    {
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween"> <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2"> <MudIcon Icon="@GetContactIcon(contact.Type)" Size="Size.Small" Color="Color.Primary"/> <MudText> @contact.Value </MudText> </MudStack>
+                                            @if (contact.IsPrimary)
+                                            {
+                                                <MudChip T="String" Size="Size.Small" Color="Color.Primary"> Primary </MudChip>
+                                            }
+                                        </MudStack>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+                        } 
+                </Authorized>
+            </AuthorizeView>
+        </MudStack>
+    </DialogContent>
+    @* <DialogActions> *@
+    @*     <MudButton OnClick="Cancel">Close</MudButton> *@
+    @* </DialogActions> *@
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+    [Parameter] public EmployeeNotesDTO Note { get; set; } = null!;
+
+    // public async Task Cancel()
+    // {
+    //     MudDialog.Cancel();
+    // }
+
+    private string GetContactIcon(ContactTypes type)
+    {
+        return type switch
+        {
+            ContactTypes.Phone => Icons.Material.Filled.Phone, 
+            ContactTypes.Email => Icons.Material.Filled.Email, 
+            ContactTypes.Telegram => Icons.Material.Filled.Send, 
+            ContactTypes.Instagram => Icons.Material.Filled.PhotoCamera, 
+            ContactTypes.LinkedIn => Icons.Material.Filled.Business, 
+            _ => Icons.Material.Filled.ContactPage
+        };
+    }
+}

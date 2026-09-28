@@ -1,0 +1,96 @@
+@using BlazorCrud.Domain
+@using BlazorCrud.Dtos.Department
+@using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Enums
+@using BlazorCrud.Interface
+@using BlazorCrud.Request.Employee
+@using BlazorCrud.Request.EmployeeNotes
+@using BlazorCrud.Service
+@using Microsoft.AspNetCore.Authorization
+@inject IEmployeeNotesService EmployeeNotesService
+@inject IEmployeeService EmployeeService
+@inject ISnackbar Snackbar 
+@inject IDialogService DialogService
+@inject IDepartamentService DepartamentService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model">
+            <MudSelect T="Guid" @bind-Value="model.EmployeeId" Variant="Variant.Outlined" Label="Employee"
+                       Required="true" Placeholder="Select a Employee" RequiredError="Employee is required">
+                <MudSelectItem T="Guid" Value="@Guid.Empty">
+                    Select Employee
+                </MudSelectItem>
+                @foreach (var employee in _employees)
+                {
+                    <MudSelectItem T="Guid" Value="employee.Id">@employee.Name</MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudTextField Variant="Variant.Outlined" Lines="3" MaxLines="6" T="string" @bind-Value="model.Content" Label="Content" Required="true" RequiredError="Content is required"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+
+    private MudForm form = default;
+    private CreateEmployeeNotesRequest model = new();
+    private List<EmployeeDTO> _employees = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.EmployeeId = Guid.Empty;
+        await LoadEmployees();
+    }
+
+    private async Task Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        if (model.EmployeeId == Guid.Empty)
+        {
+            Snackbar.Add("Employee is required", Severity.Warning);
+            return;
+        }
+        
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await EmployeeNotesService.CreateAsync(model);
+                Snackbar.Add("Employee Note Created", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Error creating employee note", Severity.Error);
+            }
+        }
+    }
+
+    private async Task LoadEmployees()
+    {
+        try
+        {
+            StateHasChanged();
+            
+            _employees = (await EmployeeService.GetAllAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading employees", Severity.Error);   
+        }
+    }
+}

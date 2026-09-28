@@ -1,4 +1,5 @@
-﻿@using BlazorCrud.Service
+﻿@using BlazorCrud.Components.Pages.Auth
+@using BlazorCrud.Service
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject CustomAuthStateProvider AuthStateProvider
@@ -13,7 +14,11 @@
         <Authorized>
             <MudAppBar Elevation="1">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
-                <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+                <AuthorizeView>
+                    <Authorized Context="authContext">
+                        Hello, @authContext.User.Identity?.Name!
+                    </Authorized>
+                </AuthorizeView>
                 <MudSpacer/>
                 <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit"
@@ -26,13 +31,15 @@
             <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
                 <NavMenu/>
             </MudDrawer>
+            
+            <MudMainContent Class="mt-16 pa-0">
+                @Body
+            </MudMainContent>
         </Authorized>
         <NotAuthorized>
+            <Login ModeToggle="DarkModeToggle" IsDarkMode="@_isDarkMode"/>
         </NotAuthorized>
     </AuthorizeView>
-    <MudMainContent Class="mt-16 pa-4">
-        @Body
-    </MudMainContent>
 </MudLayout>
 
 

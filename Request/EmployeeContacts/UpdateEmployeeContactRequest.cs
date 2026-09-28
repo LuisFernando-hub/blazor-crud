@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BlazorCrud.Enums;
 
 namespace BlazorCrud.Request.EmployeeContacts;
 
@@ -9,7 +10,7 @@ public record UpdateEmployeeContactRequest
     [Required]
     public Guid EmployeeId { get; set; }
     [Required]
-    public string Type { get; set; }
+    public ContactTypes Type { get; set; }
     [Required]
     public string Value { get; set; }
     [Required]

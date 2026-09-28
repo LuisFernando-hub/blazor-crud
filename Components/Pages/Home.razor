@@ -1,62 +1,205 @@
 ﻿@page "/"
+@using BlazorCrud.Components.Pages.EmployeeNotes.Dialog
+@using BlazorCrud.Enums
+@using BlazorCrud.Interface
 @using Microsoft.AspNetCore.Authorization
+@inject IEmployeeService EmployeeService
+@inject IEmployeeNotesService EmployeeNotesService
+@inject IDepartamentService DepartamentService
+@using BlazorCrud.Dtos.EmployeeNotes
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 9 Template!</MudText>
+<MudContainer>
+    <MudPaper Elevation="3" Class="pa-6 ma-4">
+        <MudGrid Spacing="10">
+            <MudItem xs="4">
+                <MudPaper Elevation="3">
+                    <MudChart T="double"
+                              ChartType="ChartType.Donut"
+                              Width="100%"
+                              Height="300px"
+                              InputData="@EmployeesCount"
+                              InputLabels="@EmployeeLabels"
+                              >
+                        <CustomGraphics>
+                            <text class="mud-donut-text mud-typography-h3 hades-text text-white"
+                                  x="50%"
+                                  y="50%"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle">
+                                @EmployeesCount.Sum()
+                            </text>
+                        </CustomGraphics>
+                    </MudChart>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="4">
+                <MudPaper Elevation="3">
+                    <MudChart T="double"
+                              ChartType="ChartType.Donut"
+                              Width="100%"
+                              Height="300px"
+                              InputData="@DepartamentsCount"
+                              InputLabels="@DepartamentLabels"
+                              >
+                        <CustomGraphics>
+                            <text class="mud-donut-text mud-typography-h3 hades-text text-white"
+                                  x="50%"
+                                  y="50%"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle">
+                                @DepartamentsCount.Sum()
+                            </text>
+                        </CustomGraphics>
+                    </MudChart>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="4">
+                <MudPaper Elevation="3">
+                    <MudChart T="double"
+                              ChartType="ChartType.Donut"
+                              Width="100%"
+                              Height="300px"
+                              InputData="@EmployeeNotesCount"
+                              InputLabels="@EmployeeNotesLabels"
+                              >
+                        <CustomGraphics>
+                            <text class="mud-donut-text mud-typography-h3 hades-text text-white"
+                                  x="50%"
+                                  y="50%"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle">
+                                @EmployeeNotesCount.Sum()
+                            </text>
+                        </CustomGraphics>
+                    </MudChart>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    <MudPaper Elevation="3" Class="pa-6 ma-4">
+        <MudGrid Spacing="10">
+            <MudItem xs="12">
+                <MudDataGrid T="EmployeeNotesDTO" Items="@EmployeeNotes" Loading="@_loading" Hover="true" Dense="false"
+                             Striped="false" Bordered="false" ReadOnly="true" Class="elevation-1">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Employee.Name" Title="Employee Name">
+                            <CellTemplate>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    <MudText>@context.Item.Employee.Name</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        
+                        <PropertyColumn Property="x => x.Employee.Departament.Name" Title="Departament Name">
+                            <CellTemplate>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    <MudText>@context.Item.Employee.Departament.Name</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        
+                        <PropertyColumn Property="x => x.Content" Title="Content">
+                            <CellTemplate>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    <MudText>@context.Item.Content</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.CreatedAt" Title="Created At" Format="MMM dd, yyyy" />
+                        <TemplateColumn Title="Actions" TextAlignment="TextAlignment.Right">
+                            <CellTemplate>
+                                <MudStack Row="true" Spacing="0" Class="pa-2">
+                                    <div>
+                                        <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Primary"
+                                                       Size="Size.Small" Class="mx-1"
+                                                       OnClick="@(() => OpenDetailsEmployeeNoteDialog(context.Item))" />
+                                    </div>
+                                </MudStack>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+@code {
+    private double[] EmployeesCount = [];
+    private double[] DepartamentsCount = [];
+    private double[] EmployeeNotesCount = [];
+    private static string[] EmployeeLabels =
+    [
+        "Active",
+        "Inactive"
+    ];
+    
+    private static string[] DepartamentLabels = [];
+    private static string[] EmployeeNotesLabels = [
+        "Notes"
+    ];
+    
+    private bool _hidePosition;
+    private bool _loading;
+    private IEnumerable<EmployeeNotesDTO> EmployeeNotes = new List<EmployeeNotesDTO>();
+    private readonly DialogOptions _closeButton = new() { CloseButton = true };
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudAlert Severity="Severity.Success">The reactor type is RBMK-1000</MudAlert>
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
-</MudText>
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 9</MudText>
-<br />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployeeNotes();
+        await LoadDataChart();
+    }
 
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 9 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+    private async Task OpenDetailsEmployeeNoteDialog(EmployeeNotesDTO employeeNotes)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Note"] = employeeNotes
+        };
+        
+        var dialog = await DialogService.ShowAsync<DetailsEmployeeNotes>("Details", parameters, _closeButton);
+    }
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+    private async Task LoadDataChart()
+    {
+        StateHasChanged();
+        
+        var departaments = await DepartamentService.GetAllAsync();
+        var employees = await EmployeeService.GetAllAsync();
+        
+        DepartamentLabels = departaments
+            .Select(d => d.Name)
+            .ToArray();
+        
+        DepartamentsCount = departaments
+            .Select(d => (double)employees.Count(e => e.DepartamentId == d.Id))
+            .ToArray();
+
+        EmployeesCount =
+        [
+            employees.Count(e => e.Status == EmployeeStatus.Active),
+            employees.Count(e => e.Status == EmployeeStatus.Inactive),
+        ];
+        
+        EmployeeNotesCount = [(double)EmployeeNotes.Count()];
+    }
+
+    private async Task LoadEmployeeNotes()
+    {
+        try
+        {
+            StateHasChanged();
+            EmployeeNotes = (await EmployeeNotesService.GetAllAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error to loading employee notes", Severity.Error);
+        }
+    }
+}

@@ -1,0 +1,54 @@
+@using BlazorCrud.Domain
+@using BlazorCrud.Enums
+@using BlazorCrud.Interface
+@using BlazorCrud.Request.Departament
+@using BlazorCrud.Request.Employee
+@using Microsoft.AspNetCore.Authorization
+@inject IDepartamentService DepartamentService
+@inject ISnackbar Snackbar 
+@inject IDialogService DialogService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model">
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.Name" Label="Name" Required="true" RequiredError="Name is required"/>
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.Description" Label="Description"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+
+    private MudForm form = default;
+    private CreateDepartamentRequest model = new();
+
+    private async Task Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await DepartamentService.CreateAsync(model);
+                Snackbar.Add("Departament Created", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Error creating departament", Severity.Error);
+            }
+        }
+    }
+}

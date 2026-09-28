@@ -29,7 +29,7 @@
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
-    [Parameter] public Guid EmployeeId {  get; set; }
+    [Parameter] public Guid Id {  get; set; }
     [Parameter] public string Message { get; set; }
 
     private void Cancel() => MudDialog.Cancel();

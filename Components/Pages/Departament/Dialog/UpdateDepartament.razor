@@ -1,0 +1,64 @@
+@using BlazorCrud.Domain
+@using BlazorCrud.Dtos.Department
+@using BlazorCrud.Dtos.Employee
+@using BlazorCrud.Interface
+@using BlazorCrud.Enums
+@using BlazorCrud.Request.Departament
+@using BlazorCrud.Request.Employee
+@using Microsoft.AspNetCore.Authorization
+@inject IDepartamentService DepartamentService
+@inject ISnackbar Snackbar 
+@inject IDialogService DialogService
+@attribute [Authorize]
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model">
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.Name" Label="Name" Required="true" RequiredError="Name is required"/>
+            <MudTextField Variant="Variant.Outlined" T="string" @bind-Value="model.Description" Label="Description"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default;
+    [Parameter] public DepartamentDTO Departament { get; set; }
+    [Parameter] public string Title { get; set; }
+    
+    private MudForm form;
+    private UpdateDepartamentRequest model = new();
+
+    private async Task Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                await DepartamentService.UpdateAsync(model);
+                Snackbar.Add("Departament Updated", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Error updating departament", Severity.Error);
+            }
+        }
+    }
+    
+    protected override void OnInitialized()
+    {
+        model.Id = Departament.Id;
+        model.Name = Departament.Name;
+        model.Description = Departament.Description;
+    }
+
+}
+

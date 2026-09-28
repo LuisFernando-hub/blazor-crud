@@ -29,10 +29,10 @@
                         <MudText Typo="Typo.h6" Class="mud-primary-text">Contacts (@_employeesContacts.Count)</MudText>
                     </ToolBarContent>
                     <Columns>
-                        <PropertyColumn Property="x => x.Type" Title="Type">
+                        <PropertyColumn Property="x => x.Type" Title="Type Contact">
                             <CellTemplate>
                                 <MudStack Row="true" AlignItems="AlignItems.Center">
-                                    <MudAvatar Color="Color.Secondary" Size="Size.Medium">@(context.Item.Type[0])</MudAvatar>
+                                    <MudAvatar Color="Color.Secondary" Size="Size.Medium">@(context.Item.Type.ToString()[0])</MudAvatar>
                                     <MudText>@context.Item.Type</MudText>
                                 </MudStack>
                             </CellTemplate>
@@ -41,11 +41,24 @@
                         <PropertyColumn Property="x => x.Value" Title="Value">
                             <CellTemplate>
                                 <MudStack Row="true" AlignItems="AlignItems.Center">
-                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small"></MudIcon>
                                     <MudText>@context.Item.Value</MudText>
                                 </MudStack>
                             </CellTemplate>
                         </PropertyColumn>
+                        
+                        <PropertyColumn Property="x => x.Type" Title="Type Contact">
+                            <CellTemplate>
+                                <MudStack Row="true" AlignItems="AlignItems.Center">
+                                    @if (context.Item.IsPrimary)
+                                    {
+                                        <MudChip T="string" Color="Color.Success">Primary Contact</MudChip>
+                                    } else {
+                                        <MudChip T="string" Color="Color.Secondary">Secondary Contact</MudChip>
+                                    }
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        
                         <TemplateColumn Title="Actions" TextAlignment="TextAlignment.Right">
                             <CellTemplate>
                                 <MudStack Row="true" Spacing="0" Class="pa-2">
@@ -61,7 +74,6 @@
                                     </div>
                                 </MudStack>
                             </CellTemplate>
-
                         </TemplateColumn>
                     </Columns>
                     <PagerContent>
@@ -76,6 +88,8 @@
 @code{
     private List<EmployeeContactDTO> _employeesContacts = new();
     private bool _loading = false;
+    private readonly DialogOptions config = new() { FullWidth = true, CloseButton = true };
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,7 +126,7 @@
             ["Title"] = $"Edit Employee Contact: {employeeContact.Type}" 
         };
 
-        var dialog = await DialogService.ShowAsync<UpdateEmployeeContact>("Edit Employee Contact", parameters);
+        var dialog = await DialogService.ShowAsync<UpdateEmployeeContact>("Edit Employee Contact", parameters, config);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -126,11 +140,11 @@
     {
         var parameters = new DialogParameters
         {
-            ["EmployeeContactId"] = id,
+            ["Id"] = id,
             ["Message"] = "Are you sure you want to delete this employee contacts? This action cannot be undone."
         };
 
-        var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Confirm Deletion", parameters);
+        var dialog = await DialogService.ShowAsync<DeleteConfirmation>("Confirm Deletion", parameters, config);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -150,7 +164,7 @@
 
     private async Task OpenCreateDialog()
     {
-        var dialog = await DialogService.ShowAsync<CreateEmployeeContact>("Add New Employee Contact");
+        var dialog = await DialogService.ShowAsync<CreateEmployeeContact>("Add New Employee Contact", config);
         var result = await dialog.Result;
 
         if (!result.Canceled)

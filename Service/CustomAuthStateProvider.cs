@@ -23,7 +23,8 @@ public class CustomAuthStateProvider: AuthenticationStateProvider
         {
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, user.Name),
-            new(ClaimTypes.NameIdentifier, user.Id.ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Role, user.Role.ToString()),
         };
 
         var identity = new ClaimsIdentity(
