@@ -49,6 +49,7 @@
     
     protected override async Task OnInitializedAsync()
     {
+        model.EmployeeId = Guid.Empty;
         await LoadEmployee();
     }
 
@@ -59,6 +60,12 @@
 
     private async Task Submit()
     {
+        if (model.EmployeeId == Guid.Empty)
+        {
+            Snackbar.Add("Employee is required", Severity.Warning);
+            return;
+        }
+        
         await form.Validate();
         if (form.IsValid)
         {
@@ -81,10 +88,11 @@
         {
             StateHasChanged();
             _employees = (await EmployeeService.GetAllAsync()).ToList();
-            
-            if (_employees.Any())
+
+            if (_employees.Count == 0)
             {
-                model.EmployeeId = _employees.First().Id;
+                Snackbar.Add("Please create a employee first!", Severity.Warning);
+                MudDialog.Cancel();
             }
         }
         catch (Exception ex)

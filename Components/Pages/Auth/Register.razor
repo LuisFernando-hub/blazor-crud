@@ -45,15 +45,25 @@
                           @bind-Value="registerModel.Password"
                           For="@(() => registerModel.Password)"
                           Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          Class="mb-4" />
+                          InputType="PasswordInput"
+                          Class="mb-4" 
+                          Adornment="Adornment.End" 
+                          AdornmentIcon="@PasswordInputIcon" 
+                          OnAdornmentClick="TogglePasswordVisibility" 
+                          AdornmentAriaLabel="Show Password"
+                          />
             
             <MudTextField Label="Confirmation Password"
                           @bind-Value="registerModel.ConfirmPassword"
                           For="@(() => registerModel.ConfirmPassword)"
                           Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          Class="mb-4" />
+                          InputType="ConfirmPasswordInput"
+                          Class="mb-4" 
+                          Adornment="Adornment.End" 
+                          AdornmentIcon="@ConfirmPasswordInputIcon" 
+                          OnAdornmentClick="ToggleConfirmPasswordVisibility" 
+                          AdornmentAriaLabel="Show Password"
+                          />
 
                 <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
@@ -82,6 +92,43 @@
     private RegisterRequest registerModel = new();
     private bool isLoading = false;
 
+    private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private string ConfirmPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private InputType ConfirmPasswordInput = InputType.Password;
+    private InputType PasswordInput = InputType.Password;
+    private bool _isShow, _isShowConfirmPassword;
+    
+    private void TogglePasswordVisibility()
+    {
+        if (_isShow)
+        {
+            _isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            _isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+    
+    private void ToggleConfirmPasswordVisibility()
+    {
+        if (_isShowConfirmPassword)
+        {
+            _isShowConfirmPassword = false;
+            ConfirmPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            ConfirmPasswordInput = InputType.Password;
+        }
+        else
+        {
+            _isShowConfirmPassword = true;
+            ConfirmPasswordInputIcon = Icons.Material.Filled.Visibility;
+            ConfirmPasswordInput = InputType.Text;
+        }
+    }
 
     private async Task RegisterAsync()
     {

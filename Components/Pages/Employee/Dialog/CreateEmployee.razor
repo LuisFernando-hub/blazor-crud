@@ -90,6 +90,13 @@
             StateHasChanged();
             
             _departaments = (await DepartamentService.GetAllAsync()).ToList();
+            
+            if (_departaments.Count == 0)
+            {
+                Snackbar.Add("Please create a departament first!", Severity.Warning);
+                MudDialog.Cancel();
+            }
+            
         }
         catch (Exception ex)
         {

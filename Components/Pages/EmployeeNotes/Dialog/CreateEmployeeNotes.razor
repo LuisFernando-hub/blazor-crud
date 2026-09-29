@@ -87,6 +87,12 @@
             StateHasChanged();
             
             _employees = (await EmployeeService.GetAllAsync()).ToList();
+            
+            if (_employees.Count == 0)
+            {
+                Snackbar.Add("Please create a departament first!", Severity.Warning);
+                MudDialog.Cancel();
+            }
         }
         catch (Exception ex)
         {

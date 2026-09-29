@@ -9,6 +9,7 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IConfiguration Configuration
 
 <MudGrid Class="min-vh-100 ma-0 pa-0">
 
@@ -51,12 +52,17 @@
                               InputType="InputType.Email"
                               Class="mb-3" />
 
-                <MudTextField Label="Senha"
+                <MudTextField Label="Password"
                               @bind-Value="loginModel.Password"
                               For="@(() => loginModel.Password)"
                               Variant="Variant.Outlined"
-                              InputType="InputType.Password"
-                              Class="mb-4" />
+                              InputType="PasswordInput"
+                              Class="mb-4" 
+                              Adornment="Adornment.End" 
+                              AdornmentIcon="@PasswordInputIcon" 
+                              OnAdornmentClick="TogglePasswordVisibility" 
+                              AdornmentAriaLabel="Show Password"
+                              />
 
                 <MudButton ButtonType="ButtonType.Submit"
                            Variant="Variant.Filled"
@@ -98,15 +104,36 @@
 
     [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
+    
+    private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private InputType PasswordInput = InputType.Password;
+    private bool _isShow;
+
 
     protected override async Task OnInitializedAsync()
     {
-        loginModel.Email = "lucas@gmail.com";
-        loginModel.Password = "lucas123";
+        string? appEnv = Configuration["APP_ENV"];
         
-        if (ModeToggle is not null)
+        if (appEnv == "Development")
         {
-            ModeToggle();
+            loginModel.Email = "lucas@gmail.com";
+            loginModel.Password = "lucas123";
+        }
+    }
+    
+    private void TogglePasswordVisibility()
+    {
+        if (_isShow)
+        {
+            _isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            _isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
         }
     }
     

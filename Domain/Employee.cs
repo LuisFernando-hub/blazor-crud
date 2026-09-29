@@ -7,7 +7,6 @@ public class Employee
 {
     [Key]
     public Guid Id { get; set; }
-    
     public Guid DepartamentId { get; set; }
     public Departament Departament { get; set; } = null!;
     public string Name { get; set; }
