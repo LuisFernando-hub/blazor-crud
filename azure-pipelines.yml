@@ -3,7 +3,6 @@
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
-# ASP.NET Core / Blazor
 trigger:
 - master
 
@@ -12,53 +11,106 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  # Aponta diretamente para o arquivo .csproj do seu projeto Blazor
   project: '**/*.csproj'
+  publishDirectory: '$(Build.ArtifactStagingDirectory)/publish'
 
 steps:
-- checkout: self
 
-# Restaura as dependências/pacotes do projeto
+# ============================================================
+# CHECKOUT
+# ============================================================
+
+- checkout: self
+  displayName: 'Checkout Repository'
+
+
+# ============================================================
+# RESTORE
+# ============================================================
+
 - task: DotNetCoreCLI@2
   displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
     projects: '$(project)'
 
-# Compila o projeto Blazor
+
+# ============================================================
+# BUILD
+# ============================================================
+
 - task: DotNetCoreCLI@2
   displayName: 'Build Project'
   inputs:
     command: 'build'
     projects: '$(project)'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
 
-# Publica os arquivos para deploy
+
+# ============================================================
+# PUBLISH
+# ============================================================
+
 - task: DotNetCoreCLI@2
   displayName: 'Publish App'
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: '$(project)'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(buildConfiguration) --output $(publishDirectory) --no-build'
     zipAfterPublish: true
 
-# Salva o artefato final
+
+# ============================================================
+# DEBUG - VERIFY PUBLISHED FILES
+# ============================================================
+
+- powershell: |
+    Write-Host "========================================"
+    Write-Host "Published files"
+    Write-Host "========================================"
+
+    Get-ChildItem "$(publishDirectory)" -Recurse |
+      Select-Object FullName
+
+    Write-Host ""
+    Write-Host "========================================"
+    Write-Host "Environment variables available to BUILD"
+    Write-Host "========================================"
+
+    Write-Host "ASPNETCORE_ENVIRONMENT = $env:ASPNETCORE_ENVIRONMENT"
+    Write-Host "DOTNET_ENVIRONMENT     = $env:DOTNET_ENVIRONMENT"
+
+  displayName: 'Verify Published Application'
+
+
+# ============================================================
+# PUBLISH ARTIFACT
+# ============================================================
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts'
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    pathToPublish: '$(publishDirectory)'
     artifactName: 'drop'
     publishLocation: 'Container'
 
-# DEPLOY
+
+# ============================================================
+# DEPLOY TO AZURE APP SERVICE
+# ============================================================
+
 - task: AzureWebApp@1
   displayName: 'Deploy to Azure App Service'
   inputs:
     azureSubscription: 'Azure subscription 1(2)(69f2a6cb-30f7-4193-87d4-3ce5b4d4ebbb)'
     appType: 'webApp'
     appName: 'luisfernando-hub-rh-crud'
-    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    package: '$(publishDirectory)/*.zip'
+    appSettings: >
+      -ASPNETCORE_ENVIRONMENT Production
+      -DOTNET_ENVIRONMENT Production
+
 
 # -- OLD  --
 # trigger:
