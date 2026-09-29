@@ -21,9 +21,10 @@
 
 
   <ItemGroup>
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\CreateEmployee.razor" />
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\UpdateEmployee.razor" />
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\EmployeeNotess.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\CreateEmployeeNotes.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\UpdateEmployeeNotes.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\DetailsEmployeeNotes.razor" />
+    <AdditionalFiles Include="Components\Pages\EmployeeNotes\EmployeeNotes.razor" />
   </ItemGroup>
 
 

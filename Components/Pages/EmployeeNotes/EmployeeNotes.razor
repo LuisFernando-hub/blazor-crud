@@ -28,12 +28,12 @@
                 }
                 
                 <MudDataGrid T="EmployeeNotesDTO" Items="@_employeesNotes" Loading="@_loading" Hover="true" Dense="false"
-                             Striped="false" Bordered="false" ReadOnly="true" Class="elevation-1">
+                             Striped="false" Bordered="false" ReadOnly="true" Class="elevation-1" Filterable="true" QuickFilter="@_quickFilter">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6" Class="mud-primary-text">Notes (@_employeesNotes.Count)</MudText>
                         <MudSpacer />
                         <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                                      Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
                         </MudTextField>
                     </ToolBarContent>
                     <Columns>
@@ -101,16 +101,29 @@
 @code {
     private List<EmployeeNotesDTO> _employeesNotes = new();
     private bool _loading = true;
-    private string _searchString = string.Empty;
     private readonly DialogOptions config = new() { FullWidth = true, CloseButton = true };
     private readonly DialogOptions _closeButton = new() { CloseButton = true };
 
-    private string searchString1 = "";
+    private string searchString1 = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadEmployees();
     }
+    
+    private Func<EmployeeNotesDTO, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(searchString1))
+            return true;
+
+        if (x.Content.Contains(searchString1, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        if (x.Employee.Departament.Name.Contains(searchString1, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
 
     private async Task LoadEmployees()
     {
