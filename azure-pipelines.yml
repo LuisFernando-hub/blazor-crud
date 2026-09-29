@@ -51,6 +51,14 @@ steps:
     artifactName: 'drop'
     publishLocation: 'Container'
 
+# DEPLOY
+- task: AzureWebApp@1
+  displayName: 'Deploy to Azure App Service'
+  inputs:
+    azureSubscription: 'Azure subscription 1(2)(69f2a6cb-30f7-4193-87d4-3ce5b4d4ebbb)'
+    appType: 'webApp'
+    appName: 'luisfernando-hub-rh-crud'
+    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
 
 # -- OLD  --
 # trigger:
