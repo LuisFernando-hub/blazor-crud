@@ -6,14 +6,28 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-10">
-    <MudPaper Elevation="4" Class="pa-6 rounded-lg">
-        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-4">Register</MudText>
-        
-        <EditForm Model="@registerModel" OnValidSubmit="RegisterAsync">
-            <DataAnnotationsValidator />
+<MudGrid Class="min-vh-100 ma-0 pa-0">
+    <MudItem xs="12" md="7" Class="pa-0 register-image-container">
+        <MudImage Src="/images/logo.png"
+                  Alt="Login"
+                  Class="register-image"
+                  ObjectFit="ObjectFit.Cover" />
+    </MudItem>
+    
+    <MudItem xs="12" md="5"
+             Class="d-flex align-center justify-center pa-4">
+        <MudPaper Elevation="4"
+                  Class="pa-6 rounded-lg register-card">
+            <EditForm Model="@registerModel" OnValidSubmit="RegisterAsync">
+                <DataAnnotationsValidator />
+                
+                <MudText Typo="Typo.h5"
+                         Align="Align.Center"
+                         Class="mb-4">
+                    Register
+                </MudText>
             
-            <MudTextField Label="Name"
+                <MudTextField Label="Name"
                           @bind-Value="registerModel.Name"
                           For="@(() => registerModel.Name)"
                           Variant="Variant.Outlined"
@@ -60,8 +74,9 @@
                 Have an account? <MudLink Href="/login">Sign in</MudLink>
             </MudText>
         </EditForm>
-    </MudPaper>
-</MudContainer>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 @code {
     private RegisterRequest registerModel = new();
@@ -97,3 +112,21 @@
     } 
 
 }
+
+<style>
+    .register-image-container {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .register-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+    }
+</style>

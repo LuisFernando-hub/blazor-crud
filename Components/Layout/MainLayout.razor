@@ -31,15 +31,15 @@
             <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
                 <NavMenu/>
             </MudDrawer>
-            
-            <MudMainContent Class="mt-16 pa-0">
-                @Body
-            </MudMainContent>
         </Authorized>
-        <NotAuthorized>
-            <Login ModeToggle="DarkModeToggle" IsDarkMode="@_isDarkMode"/>
-        </NotAuthorized>
+        @* <NotAuthorized> *@
+        @*     <Login ModeToggle="DarkModeToggle" IsDarkMode="@_isDarkMode"/> *@
+        @* </NotAuthorized> *@
     </AuthorizeView>
+    
+    <MudMainContent Class="mt-0 pa-0">
+        @Body
+    </MudMainContent>
 </MudLayout>
 
 
