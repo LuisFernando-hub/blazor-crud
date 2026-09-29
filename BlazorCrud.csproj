@@ -19,15 +19,6 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\CreateEmployeeNotes.razor" />
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\UpdateEmployeeNotes.razor" />
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\Dialog\DetailsEmployeeNotes.razor" />
-    <AdditionalFiles Include="Components\Pages\EmployeeNotes\EmployeeNotes.razor" />
-  </ItemGroup>
-
-
   <ItemGroup>
     <None Include="wwwroot\images\logo.png" />
   </ItemGroup>
