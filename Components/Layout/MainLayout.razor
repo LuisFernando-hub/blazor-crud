@@ -38,7 +38,11 @@
     </AuthorizeView>
     
     <MudMainContent Class="mt-0 pa-0">
-        @Body
+        <CascadingValue Name="IsDarkMode" Value="@_isDarkMode">
+            <CascadingValue Name="ModeToggle" Value="@DarkModeToggle">
+                @Body
+            </CascadingValue>
+        </CascadingValue>
     </MudMainContent>
 </MudLayout>
 
@@ -75,6 +79,7 @@
     private void DarkModeToggle()
     {
         _isDarkMode = !_isDarkMode;
+        StateHasChanged();
     }
 
     private readonly PaletteLight _lightPalette = new()

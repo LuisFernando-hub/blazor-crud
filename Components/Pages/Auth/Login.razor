@@ -92,15 +92,22 @@
 @code {
     [SupplyParameterFromForm(FormName =  "LoginForm")]
     public LoginRequest loginModel { get; set; } = new();
-    [Parameter]
-    public EventCallback ModeToggle { get; set; }
-    [Parameter]
+    
+    [CascadingParameter(Name = "ModeToggle")]
+    public Action? ModeToggle { get; set; }
+
+    [CascadingParameter(Name = "IsDarkMode")]
     public bool IsDarkMode { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         loginModel.Email = "lucas@gmail.com";
         loginModel.Password = "lucas123";
+        
+        if (ModeToggle is not null)
+        {
+            ModeToggle();
+        }
     }
     
     [CascadingParameter]
@@ -111,9 +118,12 @@
     
     private bool isLoading = false;
     
-    private async Task HandleClick()
+    private void HandleClick()
     {
-        await ModeToggle.InvokeAsync();
+        if (ModeToggle is not null)
+        {
+            ModeToggle();
+        }
     }
     
     public string DarkLightModeButtonIcon => IsDarkMode switch

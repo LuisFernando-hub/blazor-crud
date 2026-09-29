@@ -44,8 +44,7 @@
                               Width="100%"
                               Height="300px"
                               InputData="@DepartamentsCount"
-                              InputLabels="@DepartamentLabels"
-                              >
+                              InputLabels="@DepartamentLabels">
                         <CustomGraphics>
                             <text class="mud-donut-text mud-typography-h3 hades-text text-white"
                                   x="50%"
@@ -123,6 +122,9 @@
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
+                    <NoRecordsContent>
+                        <MudText Typo="Typo.h6">Empty data.</MudText>
+                    </NoRecordsContent>
                 </MudDataGrid>
             </MudItem>
         </MudGrid>
@@ -138,8 +140,9 @@
         "Active",
         "Inactive"
     ];
-    
-    private static string[] DepartamentLabels = [];
+    private static string[] DepartamentLabels = [
+        "Departaments",
+    ];
     private static string[] EmployeeNotesLabels = [
         "Notes"
     ];
@@ -173,14 +176,22 @@
         var departaments = await DepartamentService.GetAllAsync();
         var employees = await EmployeeService.GetAllAsync();
         
-        DepartamentLabels = departaments
-            .Select(d => d.Name)
-            .ToArray();
+        if (!departaments.Any())
+        {
+            DepartamentLabels = ["Departaments"];
+            DepartamentsCount = [0];
+        }
+        else
+        {
+            DepartamentLabels = departaments
+                .Select(d => d.Name)
+                .ToArray();
         
-        DepartamentsCount = departaments
-            .Select(d => (double)employees.Count(e => e.DepartamentId == d.Id))
-            .ToArray();
-
+            DepartamentsCount = departaments
+                .Select(d => (double)employees.Count(e => e.DepartamentId == d.Id))
+                .ToArray();
+        }
+        
         EmployeesCount =
         [
             employees.Count(e => e.Status == EmployeeStatus.Active),
