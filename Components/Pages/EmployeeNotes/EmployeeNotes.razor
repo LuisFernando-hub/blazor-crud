@@ -108,7 +108,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadEmployees();
+        await LoadEmployeesNotes();
     }
     
     private Func<EmployeeNotesDTO, bool> _quickFilter => x =>
@@ -125,7 +125,7 @@
         return false;
     };
 
-    private async Task LoadEmployees()
+    private async Task LoadEmployeesNotes()
     {
         try
         {
@@ -142,7 +142,6 @@
         finally
         {
             _loading = false;
-            StateHasChanged();
         }
     }
 
@@ -159,7 +158,7 @@
 
         if (!result.Canceled)
         {
-            await LoadEmployees();
+            await LoadEmployeesNotes();
             Snackbar.Add("Employee Note updated successfully", Severity.Success);
         }
     }
@@ -180,7 +179,7 @@
             try
             {
                 await EmployeeNotesService.DeleteAsync(employeeNoteId);
-                await LoadEmployees();
+                await LoadEmployeesNotes();
                 Snackbar.Add("Employee deleted successfully", Severity.Success);
             }
             catch (Exception)
@@ -197,7 +196,7 @@
 
         if (!result.Canceled)
         {
-            await LoadEmployees();
+            await LoadEmployeesNotes();
             Snackbar.Add("Employee Note created successfully", Severity.Success);
         }
     }
