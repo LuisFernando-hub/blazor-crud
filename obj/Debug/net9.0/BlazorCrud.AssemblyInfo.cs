@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorCrud")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc82be313c512179ab89934426cfa719050bc948")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b096ded810be4eca70e49035e2eef4f370998ec")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorCrud")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorCrud")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
